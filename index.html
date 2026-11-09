@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduDocs</title>
+    <!-- Google Fonts API -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat&family=Courier+Prime&family=EB+Garamond&family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Merriweather:wght@300;400;700&family=Montserrat:wght@400;500;600&family=Open+Sans:wght@400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Roboto+Mono&family=Roboto:wght@300;400;500;700&family=Segoe+UI:wght@400;600;700&family=Spectral:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e6e6e6;
+            color: #333333;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- Welcome Wizard Popup (Mail Card Size) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .welcome-card {
+            width: 420px;
+            background: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            border: 1px solid #2b579a;
+            position: relative;
+            padding: 24px 20px 20px 20px;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-close-btn {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666666;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .card-close-btn:hover {
+            background-color: #e6e6e6;
+            color: #000000;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-left: 20px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2b579a;
+        }
+
+        .card-content {
+            font-size: 13.5px;
+            line-height: 1.5;
+            color: #444444;
+            background-color: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            padding: 14px;
+            border-radius: 4px;
+        }
+
+        .card-content a {
+            color: #2b579a;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .card-footer {
+            margin-top: 16px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-confirm {
+            background-color: #2b579a;
+            color: #ffffff;
+            border: none;
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-confirm:hover {
+            background-color: #1e3f73;
+        }
+
+        /* --- Blue Title Bar --- */
+        .word-titlebar {
+            background-color: #2b579a;
+            color: #ffffff;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 13px;
+            user-select: none;
+        }
+
+        .titlebar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .word-icon {
+            font-weight: bold;
+            font-size: 16px;
+            background: #ffffff;
+            color: #2b579a;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2px;
+        }
+
+        .doc-title-input {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 2px 6px;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        .doc-title-input:hover, .doc-title-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* --- Dark Ribbon Tabs (Black Bar) --- */
+        .ribbon-tabs {
+            background-color: #000000;
+            color: #ffffff;
+            display: flex;
+            padding-left: 12px;
+            height: 32px;
+            align-items: flex-end;
+            border-bottom: 1px solid #111;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #cccccc;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+        }
+
+        .tab-btn:hover {
+            color: #ffffff;
+            background-color: #222222;
+        }
+
+        .tab-btn.active {
+            background-color: #f3f3f3;
+            color: #2b579a;
+            font-weight: 600;
+        }
+
+        .tab-btn.file-tab {
+            background-color: #2b579a;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        /* --- Ribbon Command Toolbar --- */
+        .ribbon-toolbar {
+            background-color: #f3f3f3;
+            border-bottom: 1px solid #d0d0d0;
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .tb-group {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .divider {
+            height: 24px;
+            width: 1px;
+            background-color: #d0d0d0;
+            margin: 0 4px;
+        }
+
+        .tb-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            min-width: 26px;
+            height: 26px;
+            padding: 0 6px;
+            border-radius: 2px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            color: #333333;
+        }
+
+        .tb-btn:hover {
+            background-color: #e1e1e1;
+            border-color: #adadad;
+        }
+
+        .tb-btn.active {
+            background-color: #cce4f7;
+            border-color: #0078d7;
+            color: #000000;
+        }
+
+        .tb-select {
+            height: 26px;
+            border: 1px solid #c8c8c8;
+            background: #ffffff;
+            border-radius: 2px;
+            padding: 0 6px;
+            font-size: 12px;
+            color: #333333;
+            cursor: pointer;
+            outline: none;
+        }
+
+        .tb-select:hover {
+            border-color: #0078d7;
+        }
+
+        /* --- Ruler Component --- */
+        .ruler-container {
+            background-color: #e6e6e6;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            border-bottom: 1px solid #d0d0d0;
+        }
+
+        .ruler {
+            width: 210mm;
+            height: 100%;
+            background-color: #f0f0f0;
+            border-left: 1px solid #cccccc;
+            border-right: 1px solid #cccccc;
+            display: flex;
+            align-items: flex-end;
+            font-size: 9px;
+            color: #666;
+            justify-content: space-between;
+            padding: 0 10px;
+            user-select: none;
+        }
+
+        /* --- Viewport (Centered Canvas) --- */
+        .viewport {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            background-color: #e6e6e6;
+        }
+
+        /* --- Standard A4 Paper Sheet --- */
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            background: #ffffff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            padding: 25.4mm;
+            outline: none;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000000;
+        }
+
+        .a4-page table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+        }
+
+        .a4-page th, .a4-page td {
+            border: 1px solid #000000;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .citation-tag {
+            background-color: #e8f0fe;
+            color: #1a73e8;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-size: 10pt;
+        }
+
+        /* --- Bottom Status Bar --- */
+        .word-statusbar {
+            background-color: #2b579a;
+            color: #ffffff;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            font-size: 11px;
+            user-select: none;
+        }
+
+        .statusbar-left, .statusbar-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .status-item {
+            cursor: pointer;
+        }
+
+        .status-item:hover {
+            text-decoration: underline;
+        }
+
+        /* --- Print Mode (Save as PDF) --- */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            html, body {
+                height: auto;
+                background: white;
+                overflow: visible;
+            }
+            .modal-overlay, .word-titlebar, .ribbon-tabs, .ribbon-toolbar, .ruler-container, .word-statusbar {
+                display: none !important;
+            }
+            .viewport {
+                padding: 0;
+                margin: 0;
+                overflow: visible;
+                display: block;
+            }
+            .a4-page {
+                box-shadow: none;
+                margin: 0 auto;
+                width: 100%;
+                min-height: 100vh;
+                padding: 20mm;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Microsoft Wizard Welcome Popup Modal -->
+    <div class="modal-overlay" id="welcomeModal">
+        <div class="welcome-card">
+            <button class="card-close-btn" onclick="closeWelcomeModal()" title="Close">✕</button>
+            <div class="card-header">
+                <div class="card-title">EduDocs Setup Wizard</div>
+            </div>
+            <div class="card-content">
+                <p>To start please read <a href="https://DigitechWorkspace.github.io/Webappusage" target="_blank">webapp usage</a> to understand how to use EduDocs.</p>
+            </div>
+            <div class="card-footer">
+                <button class="btn-confirm" onclick="closeWelcomeModal()">Get Started</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Word Blue Title Bar -->
+    <div class="word-titlebar">
+        <div class="titlebar-left">
+            <div class="word-icon">E</div>
+            <button class="tb-btn" onclick="execCmd('undo')" style="color:white;" title="Undo">↶</button>
+            <button class="tb-btn" onclick="execCmd('redo')" style="color:white;" title="Redo">↷</button>
+            <button class="tb-btn" onclick="saveAsPDF()" style="color:white;" title="Save as PDF">💾</button>
+            <input type="text" class="doc-title-input" value="Untitled Research - EduDocs" id="docTitle">
+        </div>
+        <div>EduDocs</div>
+    </div>
+
+    <!-- Black Ribbon Tab Header Bar -->
+    <div class="ribbon-tabs">
+        <button class="tab-btn file-tab" onclick="saveAsPDF()">Save as PDF</button>
+        <button class="tab-btn active">Home</button>
+        <button class="tab-btn" onclick="insertCitation()">Insert Citation</button>
+        <button class="tab-btn" onclick="insertTable()">Insert Table</button>
+    </div>
+
+    <!-- Ribbon Command Toolbar -->
+    <div class="ribbon-toolbar">
+        <!-- Style Heading Selector -->
+        <select class="tb-select" id="headingSelect" onchange="formatBlock(this.value)">
+            <option value="p">Normal</option>
+            <option value="h1">Heading 1</option>
+            <option value="h2">Heading 2</option>
+            <option value="h3">Heading 3</option>
+        </select>
+
+        <div class="divider"></div>
+
+        <!-- Google Fonts Selection -->
+        <select class="tb-select" id="fontSelect" onchange="applyFontFamily(this.value)">
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Arial">Arial</option>
+            <option value="Segoe UI">Segoe UI</option>
+            <option value="Inter">Inter</option>
+            <option value="Roboto">Roboto</option>
+            <option value="Lora">Lora</option>
+            <option value="Merriweather">Merriweather</option>
+            <option value="Playfair Display">Playfair Display</option>
+            <option value="Montserrat">Montserrat</option>
+            <option value="Open Sans">Open Sans</option>
+            <option value="EB Garamond">EB Garamond</option>
+            <option value="Courier Prime">Courier Prime</option>
+        </select>
+
+        <!-- Font Size Selector -->
+        <select class="tb-select" id="fontSizeSelect" onchange="applyFontSize(this.value)">
+            <option value="12pt">12 pt</option>
+            <option value="10pt">10 pt</option>
+            <option value="14pt">14 pt</option>
+            <option value="16pt">16 pt</option>
+            <option value="18pt">18 pt</option>
+            <option value="24pt">24 pt</option>
+            <option value="36pt">36 pt</option>
+        </select>
+
+        <div class="divider"></div>
+
+        <!-- Formatting Buttons -->
+        <div class="tb-group">
+            <button class="tb-btn" id="btn-bold" onclick="execCmd('bold')" title="Bold"><b>B</b></button>
+            <button class="tb-btn" id="btn-italic" onclick="execCmd('italic')" title="Italic"><i>I</i></button>
+            <button class="tb-btn" id="btn-underline" onclick="execCmd('underline')" title="Underline"><u>U</u></button>
+            <button class="tb-btn" id="btn-strike" onclick="execCmd('strikeThrough')" title="Strikethrough"><s>S</s></button>
+            <input type="color" id="textColor" onchange="execCmd('foreColor', this.value)" style="width:22px; height:22px; border:none; background:transparent; cursor:pointer;" title="Font Color">
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Alignment Controls -->
+        <div class="tb-group">
+            <button class="tb-btn" id="btn-left" onclick="execCmd('justifyLeft')" title="Align Left">Left</button>
+            <button class="tb-btn" id="btn-center" onclick="execCmd('justifyCenter')" title="Center">Center</button>
+            <button class="tb-btn" id="btn-right" onclick="execCmd('justifyRight')" title="Align Right">Right</button>
+            <button class="tb-btn" id="btn-justify" onclick="execCmd('justifyFull')" title="Justify">Justify</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Lists & Spacing -->
+        <div class="tb-group">
+            <button class="tb-btn" onclick="execCmd('insertUnorderedList')" title="Bullets">• List</button>
+            <button class="tb-btn" onclick="execCmd('insertOrderedList')" title="Numbering">1. List</button>
+            <select class="tb-select" onchange="setLineSpacing(this.value)" title="Line Spacing">
+                <option value="1.5">1.5</option>
+                <option value="1.0">1.0</option>
+                <option value="2.0">2.0</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Horizontal Ruler -->
+    <div class="ruler-container">
+        <div class="ruler">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="viewport">
+        <div id="editor" class="a4-page" contenteditable="true" spellcheck="true">
+            <h1 style="text-align: center; font-size: 24pt;">Standard Academic Research Paper Title</h1>
+            <p style="text-align: center; font-style: italic;">Author Name, Institution/Department</p>
+            <hr style="margin: 16px 0; border: none; border-top: 1px solid #ccc;">
+            <h2 style="font-size: 18pt;">Abstract</h2>
+            <p>Welcome to EduDocs. Select text to customize fonts, change font sizes, or align text.</p>
+            <h2 style="font-size: 18pt;">1. Introduction</h2>
+            <p>Begin typing your research paper here. Click <strong>"Save as PDF"</strong> in the top black tab bar to save your document as a PDF.</p>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="word-statusbar">
+        <div class="statusbar-left">
+            <span class="status-item">Page 1 of 1</span>
+            <span class="status-item"><strong id="wordCount">0</strong> words</span>
+            <span class="status-item" id="cursorPos">Ln 1, Col 1</span>
+        </div>
+        <div class="statusbar-right">
+            <span class="status-item">English (U.S.)</span>
+            <span class="status-item">100%</span>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        const editor = document.getElementById('editor');
+
+        function closeWelcomeModal() {
+            document.getElementById('welcomeModal').style.display = 'none';
+        }
+
+        function execCmd(command, value = null) {
+            try {
+                document.execCommand(command, false, value);
+            } catch(e) {}
+            editor.focus();
+            updateAll();
+        }
+
+        function formatBlock(tag) {
+            try {
+                document.execCommand('formatBlock', false, `<${tag}>`);
+            } catch(e) {}
+            updateAll();
+        }
+
+        function applyFontFamily(fontName) {
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0 && !selection.isCollapsed) {
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.style.fontFamily = fontName;
+                span.appendChild(range.extractContents());
+                range.insertNode(span);
+            } else {
+                try {
+                    document.execCommand('fontName', false, fontName);
+                } catch(e) {}
+            }
+            editor.focus();
+            updateAll();
+        }
+
+        function applyFontSize(sizeValue) {
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0 && !selection.isCollapsed) {
+                const range = selection.getRangeAt(0);
+                const span = document.createElement('span');
+                span.style.fontSize = sizeValue;
+                span.appendChild(range.extractContents());
+                range.insertNode(span);
+            } else {
+            editor.style.fontSize = sizeValue;
+            }
+            editor.focus();
+            updateAll();
+        }
+
+        function setLineSpacing(space) {
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+                let node = selection.anchorNode;
+                while (node && node !== editor && node.nodeType !== 1) {
+                    node = node.parentNode;
+                }
+                if (node && node !== editor) {
+                    node.style.lineHeight = space;
+                } else {
+                    editor.style.lineHeight = space;
+                }
+            }
+        }
+
+        function insertCitation() {
+            const author = prompt("Enter Author Last Name:", "Smith");
+            const year = prompt("Enter Year:", "2024");
+            if (author && year) {
+                const html = `<span class="citation-tag">(${author}, ${year})</span>&nbsp;`;
+                try {
+                    document.execCommand('insertHTML', false, html);
+                } catch(e) {}
+            }
+        }
+
+        function insertTable() {
+            const rows = prompt("Number of Rows:", "3");
+            const cols = prompt("Number of Columns:", "3");
+            if (rows && cols) {
+                let html = '<table>';
+                for (let i = 0; i < parseInt(rows); i++) {
+                    html += '<tr>';
+                    for (let j = 0; j < parseInt(cols); j++) {
+                        html += i === 0 ? '<th>Header</th>' : '<td>Data</td>';
+                    }
+                    html += '</tr>';
+                }
+                html += '</table><p></p>';
+                try {
+                    document.execCommand('insertHTML', false, html);
+                } catch(e) {}
+            }
+        }
+
+        function saveAsPDF() {
+            const docTitle = document.getElementById('docTitle').value || 'EduDocs-Document';
+            const originalTitle = document.title;
+            document.title = docTitle;
+            window.print();
+            document.title = originalTitle;
+        }
+
+        function updateToolbarState() {
+            const commands = ['bold', 'italic', 'underline', 'strikeThrough'];
+            commands.forEach(cmd => {
+                const btn = document.getElementById(`btn-${cmd === 'strikeThrough' ? 'strike' : cmd}`);
+                if (btn) {
+                    try {
+                        if (document.queryCommandState(cmd)) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    } catch(e) {}
+                }
+            });
+        }
+
+        function updateStats() {
+            const text = editor.innerText || '';
+            const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            document.getElementById('wordCount').innerText = words;
+        }
+
+        function updateCursorPos() {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0) {
+                const range = sel.getRangeAt(0);
+                const textBeforeCursor = editor.innerText.substring(0, range.startOffset);
+                const lines = textBeforeCursor.split('\n');
+                const lineNum = lines.length;
+                const colNum = lines[lines.length - 1].length + 1;
+                document.getElementById('cursorPos').innerText = `Ln ${lineNum}, Col ${colNum}`;
+            }
+        }
+
+        function updateAll() {
+            updateStats();
+            updateToolbarState();
+            updateCursorPos();
+        }
+
+        editor.addEventListener('input', updateAll);
+        editor.addEventListener('keyup', updateAll);
+        editor.addEventListener('mouseup', updateAll);
+
+        updateAll();
+    </script>
+</body>
+</html>
